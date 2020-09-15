@@ -1,0 +1,3 @@
+- src: git@github.com:kost2191/docker-role.git
+  scm: git
+  version: master
