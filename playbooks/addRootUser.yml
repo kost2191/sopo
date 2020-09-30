@@ -1,0 +1,28 @@
+---
+- hosts: all
+  tasks:
+  - name: Make sure we have a 'admins' group
+    group:
+      name: admins
+      state: present
+
+  - name: Allow 'admins' group to have passwordless sudo
+    lineinfile:
+      dest: /etc/sudoers
+      state: present
+      regexp: '^%admins'
+      line: '%admins ALL=(ALL) NOPASSWD: ALL'
+      validate: 'visudo -cf %s'
+
+  - name: Add sudoers users to wheel group
+    user:
+      name=anton
+      groups=admins
+      append=yes
+      state=present
+      createhome=yes
+
+  - name: Set up authorized keys for the anton user
+    authorized_key: user=anton key="{{item}}"
+    with_file:
+      - ~/.ssh/id_rsa.pub
